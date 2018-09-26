@@ -1,8 +1,8 @@
 require_relative 'framework'
 
 APP = App.new do 
-    get '/' do
-        "this is the root!"
+    get '/:foo' do |params|
+        params.fetch("foo")
     end 
 
     get '/users/:username' do |params|
