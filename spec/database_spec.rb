@@ -10,7 +10,7 @@ describe Database do
             drop: %{
                 drop table if exists submissions;
             },
-            create_submission:  %{
+            create_submission: %{
                 insert into submissions(name, email)
                 values ({name}, {email})
             },
