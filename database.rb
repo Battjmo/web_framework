@@ -15,10 +15,10 @@ class Database
 
 
 
-    def method_missing(name, *args)
+    def method_missing(name, params = {})
         sql = @queries.fetch(name)
-        @pg_conn.exec_params(sql, args).to_a.map do |row|
-            Record.new(row)
+        Executor.new(@pg_conn, sql, params).execute
+     
         end
     end
 
@@ -31,4 +31,26 @@ class Database
             @row.fetch(col_name.to_s)
         end
     end
-end 
+
+
+    class Executor
+        def initialize(pg_conn, sql, params)
+            @pg_conn = pg_conn
+            @sql = sql 
+            @params = params
+        end 
+    
+        def execute
+            var_names = @params.keys
+            args = @params.values
+            re = /{[a-zA-Z]\w*}/
+            sql = @sql.gsub(re) do |var_name_with_curlies|  
+                var_name = var_name_with_curlies.sub(/\A{/, '').sub(/}\z/, '').to_sym
+                index = var_names.index(var_name) + 1
+                "$#{index}"
+            end 
+            @pg_conn.exec_params(sql, args).to_a.map do |row|
+            Record.new(row)
+            end 
+        end 
+    end 
