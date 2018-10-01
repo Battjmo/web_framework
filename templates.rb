@@ -11,7 +11,7 @@ class Templates
            lines = @source.split("\n")
            nodes = lines.map { |line| build_node(line) } 
            tree = build_tree(nodes)
-           pp tree
+           tree.render(params)
         end
 
         def build_node(line)
@@ -42,11 +42,24 @@ class Templates
 end 
 
     class TextNode < Struct.new(:indent, :text)
+        def render(params)
+            " " * (indent * 2) + text
+        end
     end 
 
     class CodeNode < Struct.new(:indent, :code)
+        def render(params)
+            " " * (indent * 2) + eval(code).to_s
+        end 
     end 
     
     class TagNode < Struct.new(:indent, :tag_name, :children)
+        def render(params)
+            [
+               " " * (indent * 2) + "<#{tag_name}>",
+                children.map { |child| child.render(params) },
+               " " * (indent * 2) + "</#{tag_name}>",
+            ].flatten.join("\n")
+        end 
     end
 end 

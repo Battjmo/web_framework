@@ -18,7 +18,6 @@ class Database
     def method_missing(name, params = {})
         sql = @queries.fetch(name)
         Executor.new(@pg_conn, sql, params).execute
-     
         end
     end
 

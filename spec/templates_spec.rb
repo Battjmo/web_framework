@@ -8,7 +8,7 @@ class Templates
                     p
                         | User:
                     p
-                        = email
+                        = 1 + 1
                 END
 
                 expected = <<~END
